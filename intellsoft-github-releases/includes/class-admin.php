@@ -298,19 +298,23 @@ class IGR_Admin {
         echo '<p>' . __('Configure caching settings to optimize performance and reduce API calls.', 'intellsoft-github-releases') . '</p>';
     }
     
-    public function token_field_callback() {
-        $settings = get_option('igr_settings');
-        $token = $settings['github_token'] ?? '';
-        $token_display = !empty($token) ? '••••••••' . substr($token, -4) : '';
-        
-        echo '<input type="password" id="github_token" name="igr_settings[github_token]" 
-             value="' . esc_attr($token) . '" class="regular-text" />
-             <button type="button" id="toggle_token" class="button button-small">' . __('Show', 'intellsoft-github-releases') . '</button>
-             <p class="description">' . __('Token currently set:', 'intellsoft-github-releases') . ' <code>' . esc_html($token_display) . '</code></p>
-             <p class="description">' . __('Create a personal access token with repo scope for private repositories. Leave empty for public repos.', 'intellsoft-github-releases') . '</p>
-             <p><a href="https://github.com/settings/tokens/new?scopes=repo&description=WordPress+GitHub+Releases" 
-                   target="_blank" class="button button-small">' . __('Generate Token', 'intellsoft-github-releases') . '</a></p>';
-    }
+public function token_field_callback() {
+    $settings = get_option('igr_settings');
+    $token = $settings['github_token'] ?? '';
+    
+    // مقدار پیش‌فرض خالی - همیشه فیلد خالی نشان داده می‌شود
+    // فقط اگر توکن وجود دارد، در نمایش نشان می‌دهیم
+    $token_display = !empty($token) ? '••••••••' . substr($token, -4) : __('(empty)', 'intellsoft-github-releases');
+    
+    echo '<input type="password" id="github_token" name="igr_settings[github_token]" 
+         value="" class="regular-text" placeholder="' . __('Leave empty for public repositories', 'intellsoft-github-releases') . '" />
+         <button type="button" id="toggle_token" class="button button-small">' . __('Show/Hide', 'intellsoft-github-releases') . '</button>
+         <p class="description">' . __('Token currently set:', 'intellsoft-github-releases') . ' <code>' . esc_html($token_display) . '</code></p>
+         <p class="description">' . __('To update token, enter new value. To clear token, leave empty and save.', 'intellsoft-github-releases') . '</p>
+         <p><a href="https://github.com/settings/tokens/new?scopes=repo&description=WordPress+GitHub+Releases" 
+               target="_blank" class="button button-small">' . __('Generate Token', 'intellsoft-github-releases') . '</a></p>';
+}
+
     
     public function repo_field_callback() {
         $settings = get_option('igr_settings');

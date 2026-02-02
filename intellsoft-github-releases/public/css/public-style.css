@@ -1,0 +1,447 @@
+/* استایل‌های عمومی */
+.igr-changelog,
+.igr-changelog-multiple {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* هر ریلیز */
+.igr-release {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.igr-release:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.igr-latest-release {
+    border-left: 4px solid #28a745;
+    padding-left: 15px;
+}
+
+.igr-older-release {
+    opacity: 0.95;
+}
+
+/* عنوان ریلیز */
+.igr-release-title {
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.igr-release-date {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: normal;
+    background: #e9ecef;
+    padding: 3px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.igr-new-badge {
+    font-size: 10px;
+    background: #ffc107;
+    color: #212529;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* بدنه ریلیز */
+.igr-release-body {
+    line-height: 1.6;
+    color: #495057;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.igr-release-body h2 {
+    font-size: 18px;
+    color: #2c3e50;
+    margin: 20px 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.igr-release-body h3 {
+    font-size: 16px;
+    color: #0d6efd;
+    margin: 15px 0 8px 0;
+    font-weight: 600;
+}
+
+.igr-release-body h4 {
+    font-size: 14px;
+    color: #495057;
+    margin: 12px 0 6px 0;
+    font-weight: 600;
+}
+
+.igr-release-body p {
+    margin-bottom: 12px;
+}
+
+.igr-release-body ul,
+.igr-release-body ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.igr-release-body li {
+    margin-bottom: 5px;
+}
+
+.igr-release-body code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 13px;
+}
+
+.igr-release-body pre {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    overflow: auto;
+    margin: 15px 0;
+    font-size: 13px;
+}
+
+.igr-release-body pre code {
+    background: none;
+    padding: 0;
+}
+
+.igr-release-body a {
+    color: #0d6efd;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.igr-release-body a:hover {
+    color: #0b5ed7;
+    text-decoration: none;
+}
+
+/* متا اطلاعات */
+.igr-release-meta {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.igr-github-link,
+.igr-download-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    background: #0d6efd;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.igr-github-link:hover,
+.igr-download-link:hover {
+    background: #0b5ed7;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.igr-download-link {
+    background: #6c757d;
+}
+
+.igr-download-link:hover {
+    background: #5c636a;
+}
+
+.igr-download-size {
+    font-size: 11px;
+    opacity: 0.9;
+    margin-left: 3px;
+}
+
+.dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* تاریخچه ریلیزها */
+.igr-release-history {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.igr-history-summary {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.igr-history-timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.igr-history-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.igr-history-item {
+    position: relative;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.igr-history-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.igr-history-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #6c757d;
+    border: 2px solid white;
+}
+
+.igr-history-item.latest::before {
+    background: #28a745;
+}
+
+.igr-history-version {
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.igr-history-date {
+    font-size: 12px;
+    color: #6c757d;
+    background: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.igr-history-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.igr-history-excerpt {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.igr-history-link {
+    font-size: 12px;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.igr-history-link:hover {
+    text-decoration: underline;
+}
+
+/* خطاها و وضعیت‌ها */
+.igr-error {
+    background: #f8d7da;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.igr-error.admin-notice {
+    border-left: 4px solid #dc3545;
+}
+
+.igr-error-small {
+    color: #dc3545;
+    font-size: 13px;
+}
+
+.igr-no-releases {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.igr-version {
+    font-weight: 600;
+    color: #28a745;
+    font-size: 14px;
+}
+
+.igr-version-date {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+    .igr-release-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .igr-release-date {
+        align-self: flex-start;
+    }
+    
+    .igr-release-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .igr-github-link,
+    .igr-download-link {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .igr-history-version {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
+
+/* حالت تاریک */
+@media (prefers-color-scheme: dark) {
+    .igr-changelog,
+    .igr-changelog-multiple {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .igr-release {
+        border-bottom-color: #4a5568;
+    }
+    
+    .igr-release-title {
+        color: #e2e8f0;
+    }
+    
+    .igr-release-date {
+        background: #4a5568;
+        color: #cbd5e0;
+    }
+    
+    .igr-release-body {
+        color: #cbd5e0;
+    }
+    
+    .igr-release-body h2,
+    .igr-release-body h3,
+    .igr-release-body h4 {
+        color: #e2e8f0;
+        border-bottom-color: #4a5568;
+    }
+    
+    .igr-release-body code {
+        background: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .igr-release-body pre {
+        background: #4a5568;
+        border-color: #2d3748;
+    }
+    
+    .igr-release-body a {
+        color: #63b3ed;
+    }
+    
+    .igr-release-body a:hover {
+        color: #4299e1;
+    }
+    
+    .igr-release-meta {
+        border-top-color: #4a5568;
+    }
+    
+    .igr-history-timeline::before {
+        background: #4a5568;
+    }
+    
+    .igr-history-item::before {
+        border-color: #2d3748;
+    }
+    
+    .igr-error {
+        background: #742a2a;
+        border-color: #842029;
+        color: #f8d7da;
+    }
+}

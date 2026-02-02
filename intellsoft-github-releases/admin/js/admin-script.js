@@ -2,6 +2,32 @@
     'use strict';
     
     $(document).ready(function() {
+
+// پاک کردن توکن
+$('#clear_token').on('click', function(e) {
+    e.preventDefault();
+    if (confirm('Are you sure you want to clear the GitHub token?')) {
+        $('#github_token').val('');
+        alert('Token field cleared. Remember to save changes.');
+    }
+});
+
+// بهبود مدیریت نمایش/پنهان کردن توکن
+$('#toggle_token').on('click', function() {
+    var $tokenField = $('#github_token');
+    var $button = $(this);
+    
+    if ($tokenField.attr('type') === 'password') {
+        $tokenField.attr('type', 'text');
+        $button.text(igr_admin.strings.hide);
+        $button.addClass('active');
+    } else {
+        $tokenField.attr('type', 'password');
+        $button.text(igr_admin.strings.show);
+        $button.removeClass('active');
+    }
+});
+
         // مدیریت نمایش/عدم نمایش فیلد توکن
         $('#toggle_token').on('click', function() {
             var $tokenField = $('#github_token');

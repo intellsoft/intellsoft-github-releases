@@ -6,7 +6,9 @@
 
 ---
 ![افزونه IntellSoft GitHub Releases برای وردپرس](https://lh3.googleusercontent.com/d/1UR2NoePArBdgOzBJYBJYhbDYR9EYo22r)
-![IntellSoft GitHub Releases]([https://raw.githubusercontent.com/USERNAME/REPO/main/assets/screenshot-2.png](https://drive.google.com/file/d/1JmU3O-dwUwjOmYJ5H5udWTwhuRJm9wqJ/view?usp=sharing)
+
+![نمای Changelog افزونه IntellSoft GitHub Releases](https://lh3.googleusercontent.com/d/1UR2NoePArBdgOzBJYBJYhbDYR9EYo22r)
+
 
 
 ## ✨ کاربرد اصلی افزونه

@@ -1,3 +1,298 @@
+/* ========== استایل‌های Markdown ========== */
+
+/* تیترها */
+.igr-markdown-h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin: 25px 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 700;
+}
+
+.igr-markdown-h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin: 22px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 600;
+}
+
+.igr-markdown-h3 {
+    font-size: 20px;
+    color: #0d6efd;
+    margin: 20px 0 10px 0;
+    font-weight: 600;
+}
+
+.igr-markdown-h4 {
+    font-size: 18px;
+    color: #495057;
+    margin: 18px 0 8px 0;
+    font-weight: 600;
+}
+
+/* پاراگراف‌ها */
+.igr-markdown-p {
+    margin-bottom: 16px;
+    line-height: 1.7;
+    color: #495057;
+    text-align: justify;
+}
+
+/* لیست‌ها */
+.igr-markdown-ul,
+.igr-markdown-ol {
+    margin: 15px 0 15px 25px;
+    padding-left: 10px;
+}
+
+.igr-markdown-ul {
+    list-style-type: disc;
+}
+
+.igr-markdown-ol {
+    list-style-type: decimal;
+}
+
+.igr-markdown-li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    padding-left: 5px;
+}
+
+.igr-markdown-li .igr-markdown-ul,
+.igr-markdown-li .igr-markdown-ol {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+/* متن‌های تأکیدی */
+.igr-markdown-strong {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.igr-markdown-em {
+    font-style: italic;
+    color: #495057;
+}
+
+.igr-markdown-del {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+/* لینک‌ها */
+.igr-markdown-link {
+    color: #0d6efd;
+    text-decoration: none;
+    border-bottom: 1px dashed #0d6efd;
+    padding-bottom: 1px;
+    transition: all 0.2s;
+}
+
+.igr-markdown-link:hover {
+    color: #0b5ed7;
+    text-decoration: none;
+    border-bottom: 1px solid #0b5ed7;
+}
+
+/* کد */
+.igr-markdown-code-inline {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    color: #e74c3c;
+}
+
+.igr-markdown-pre {
+    background: #2d3748;
+    border-radius: 6px;
+    padding: 18px;
+    margin: 20px 0;
+    overflow: auto;
+    border-left: 4px solid #0d6efd;
+}
+
+.igr-markdown-code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: #e2e8f0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* نقل‌قول */
+.igr-markdown-blockquote {
+    background: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+    padding: 15px 20px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #495057;
+    border-radius: 0 4px 4px 0;
+}
+
+.igr-markdown-blockquote .igr-markdown-p {
+    margin-bottom: 10px;
+}
+
+.igr-markdown-blockquote .igr-markdown-p:last-child {
+    margin-bottom: 0;
+}
+
+/* خط افقی */
+.igr-markdown-hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e9ecef, transparent);
+    margin: 30px 0;
+}
+
+/* آیکون‌های Emoji */
+.igr-markdown-emoji {
+    font-size: 1.2em;
+    vertical-align: middle;
+    margin: 0 2px;
+}
+
+/* بهبود لیست‌ها با آیکون */
+.igr-markdown-ul .igr-markdown-li {
+    position: relative;
+    padding-left: 25px;
+}
+
+.igr-markdown-ul .igr-markdown-li:before {
+    content: "•";
+    color: #0d6efd;
+    font-size: 1.5em;
+    position: absolute;
+    left: 0;
+    top: -2px;
+}
+
+.igr-markdown-ol .igr-markdown-li {
+    counter-increment: list-counter;
+    padding-left: 30px;
+    position: relative;
+}
+
+.igr-markdown-ol .igr-markdown-li:before {
+    content: counter(list-counter) ".";
+    color: #0d6efd;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* سبک برای مثال شما */
+.igr-markdown-h2 .igr-markdown-emoji {
+    margin-right: 10px;
+}
+
+.igr-markdown-h3 .igr-markdown-emoji {
+    margin-right: 8px;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+    .igr-markdown-h1 {
+        font-size: 24px;
+    }
+    
+    .igr-markdown-h2 {
+        font-size: 20px;
+    }
+    
+    .igr-markdown-h3 {
+        font-size: 18px;
+    }
+    
+    .igr-markdown-h4 {
+        font-size: 16px;
+    }
+    
+    .igr-markdown-ul,
+    .igr-markdown-ol {
+        margin-left: 15px;
+    }
+    
+    .igr-markdown-pre {
+        padding: 12px;
+        font-size: 13px;
+    }
+}
+
+/* حالت تاریک */
+@media (prefers-color-scheme: dark) {
+    .igr-markdown-h1,
+    .igr-markdown-h2 {
+        color: #e2e8f0;
+        border-bottom-color: #4a5568;
+    }
+    
+    .igr-markdown-h3 {
+        color: #63b3ed;
+    }
+    
+    .igr-markdown-h4 {
+        color: #cbd5e0;
+    }
+    
+    .igr-markdown-p {
+        color: #cbd5e0;
+    }
+    
+    .igr-markdown-strong {
+        color: #e2e8f0;
+    }
+    
+    .igr-markdown-em {
+        color: #cbd5e0;
+    }
+    
+    .igr-markdown-code-inline {
+        background: #4a5568;
+        border-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .igr-markdown-pre {
+        background: #1a202c;
+        border-left-color: #63b3ed;
+    }
+    
+    .igr-markdown-code {
+        color: #e2e8f0;
+    }
+    
+    .igr-markdown-blockquote {
+        background: #2d3748;
+        border-left-color: #63b3ed;
+        color: #cbd5e0;
+    }
+    
+    .igr-markdown-hr {
+        background: linear-gradient(to right, transparent, #4a5568, transparent);
+    }
+    
+    .igr-markdown-link {
+        color: #63b3ed;
+        border-bottom-color: #63b3ed;
+    }
+    
+    .igr-markdown-link:hover {
+        color: #4299e1;
+        border-bottom-color: #4299e1;
+    }
+}
+
 /* استایل‌های عمومی */
 .igr-changelog,
 .igr-changelog-multiple {

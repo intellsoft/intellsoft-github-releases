@@ -7,7 +7,7 @@
 ---
 ![افزونه IntellSoft GitHub Releases برای وردپرس](https://lh3.googleusercontent.com/d/1UR2NoePArBdgOzBJYBJYhbDYR9EYo22r)
 
-![نمای Changelog افزونه IntellSoft GitHub Releases](https://lh3.googleusercontent.com/d/1UR2NoePArBdgOzBJYBJYhbDYR9EYo22r)
+![نمای Changelog افزونه IntellSoft GitHub Releases](https://lh3.googleusercontent.com/d/1JmU3O-dwUwjOmYJ5H5udWTwhuRJm9wqJ)
 
 
 

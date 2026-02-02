@@ -275,90 +275,434 @@ class IGR_Shortcode {
         return ob_get_clean();
     }
     
-    /**
-     * پردازش مارک‌داون و تبدیل لینک‌ها
-     */
-    private function process_markdown($text) {
-        if (empty($text)) {
-            return '';
-        }
-        
-        // تبدیل لینک‌های مارک‌داون به HTML
-        $text = preg_replace_callback(
-            '/\[([^\]]+)\]\(([^)]+)\)/',
-            function($matches) {
-                $url = esc_url($matches[2]);
-                $text = esc_html($matches[1]);
-                return '<a href="' . $url . '" target="_blank" rel="noopener noreferrer">' . $text . '</a>';
-            },
-            $text
-        );
-        
-        // تبدیل سرتیترها
-        $text = preg_replace('/^### (.*)$/m', '<h4>$1</h4>', $text);
-        $text = preg_replace('/^## (.*)$/m', '<h3>$1</h3>', $text);
-        $text = preg_replace('/^# (.*)$/m', '<h2>$1</h2>', $text);
-        
-        // تبدیل bold و italic
-        $text = preg_replace('/\*\*\*(.*?)\*\*\*/s', '<strong><em>$1</em></strong>', $text);
-        $text = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $text);
-        $text = preg_replace('/\*(.*?)\*/s', '<em>$1</em>', $text);
-        
-        // تبدیل کد inline
-        $text = preg_replace('/`([^`]+)`/', '<code>$1</code>', $text);
-        
-        // تبدیل لیست‌ها
-        $lines = explode("\n", $text);
-        $in_list = false;
-        $list_type = ''; // 'ul' یا 'ol'
-        $output = [];
-        
-        foreach ($lines as $line) {
-            $trimmed_line = trim($line);
-            
-            if (preg_match('/^[\*\-\+] (.*)/', $trimmed_line, $matches)) {
-                if (!$in_list || $list_type !== 'ul') {
-                    if ($in_list) {
-                        $output[] = $list_type === 'ul' ? '</ul>' : '</ol>';
-                    }
-                    $output[] = '<ul>';
-                    $in_list = true;
-                    $list_type = 'ul';
-                }
-                $output[] = '<li>' . esc_html($matches[1]) . '</li>';
-            } elseif (preg_match('/^\d+\. (.*)/', $trimmed_line, $matches)) {
-                if (!$in_list || $list_type !== 'ol') {
-                    if ($in_list) {
-                        $output[] = $list_type === 'ul' ? '</ul>' : '</ol>';
-                    }
-                    $output[] = '<ol>';
-                    $in_list = true;
-                    $list_type = 'ol';
-                }
-                $output[] = '<li>' . esc_html($matches[1]) . '</li>';
-            } else {
-                if ($in_list) {
-                    $output[] = $list_type === 'ul' ? '</ul>' : '</ol>';
-                    $in_list = false;
-                    $list_type = '';
-                }
-                $output[] = $line;
-            }
-        }
-        
-        if ($in_list) {
-            $output[] = $list_type === 'ul' ? '</ul>' : '</ol>';
-        }
-        
-        $text = implode("\n", $output);
-        
-        // تبدیل خطوط جدید به <br> (فقط برای خطوطی که داخل بلوک‌های کد نیستند)
-        $text = preg_replace('/\n(?!\s*[<>])/', "<br>\n", $text);
-        
-        // اطمینان از امنیت خروجی
-        return wp_kses_post($text);
+/**
+ * پردازش کامل Markdown و تبدیل به HTML
+ */
+private function process_markdown($text) {
+    if (empty($text)) {
+        return '';
     }
     
+    // 1. تبدیل تیترها
+    $text = $this->convert_headers($text);
+    
+    // 2. تبدیل لیست‌ها
+    $text = $this->convert_lists($text);
+    
+    // 3. تبدیل خطوط افقی
+    $text = $this->convert_horizontal_rules($text);
+    
+    // 4. تبدیل کد بلوک
+    $text = $this->convert_code_blocks($text);
+    
+    // 5. تبدیل نقل‌قول‌ها
+    $text = $this->convert_blockquotes($text);
+    
+    // 6. مدیریت پاراگراف‌ها و پردازش inline
+    $text = $this->convert_paragraphs($text);
+    
+    // 7. پردازش نهایی برای مطالب باقی‌مانده
+    $text = $this->process_remaining_text($text);
+    
+    // اطمینان از امنیت خروجی
+    return wp_kses_post($text);
+}
+
+
+/**
+ * پردازش متن‌های باقی‌مانده که در مراحل قبل پردازش نشده‌اند
+ */
+private function process_remaining_text($text) {
+    // پیدا کردن بخش‌هایی که تگ HTML ندارند و پردازش نشده‌اند
+    $lines = explode("\n", $text);
+    $output = [];
+    
+    foreach ($lines as $line) {
+        $trimmed_line = trim($line);
+        
+        // اگر خط خالی است
+        if (empty($trimmed_line)) {
+            $output[] = $line;
+            continue;
+        }
+        
+        // اگر خط قبلاً تگ HTML دارد، تغییر نده
+        if (preg_match('/^<(\/)?(h[1-6]|ul|ol|li|pre|code|blockquote|hr|p|a|strong|em|del)/i', $trimmed_line)) {
+            $output[] = $line;
+        } else {
+            // پردازش inline برای خطوط باقی‌مانده
+            $output[] = $this->process_inline_markdown($line);
+        }
+    }
+    
+    return implode("\n", $output);
+}
+
+
+/**
+ * تبدیل کد بلوک (فقط برای بلوک‌های کد)
+ */
+private function convert_code_blocks($text) {
+    // تبدیل کد block با سه backticks
+    return preg_replace_callback(
+        '/```(\w*)\n(.*?)```/s',
+        function($matches) {
+            $language = !empty($matches[1]) ? ' language-' . esc_attr($matches[1]) : '';
+            $code_content = esc_html($matches[2]);
+            return '<pre class="igr-markdown-pre"><code class="igr-markdown-code' . $language . '">' . $code_content . '</code></pre>';
+        },
+        $text
+    );
+}
+
+/**
+ * تبدیل متن‌های تأکیدی (bold, italic, etc.)
+ */
+private function convert_emphasis($text) {
+    // تبدیل **bold** به <strong>
+    $text = preg_replace('/\*\*(.*?)\*\*/s', '<strong class="igr-markdown-strong">$1</strong>', $text);
+    
+    // تبدیل __bold__ به <strong>
+    $text = preg_replace('/__(.*?)__/s', '<strong class="igr-markdown-strong">$1</strong>', $text);
+    
+    // تبدیل *italic* به <em>
+    $text = preg_replace('/\*(?!\s)(.*?)(?<!\s)\*/s', '<em class="igr-markdown-em">$1</em>', $text);
+    
+    // تبدیل _italic_ به <em>
+    $text = preg_replace('/_(?!\s)(.*?)(?<!\s)_/s', '<em class="igr-markdown-em">$1</em>', $text);
+    
+    // تبدیل ~~strikethrough~~ به <del>
+    $text = preg_replace('/~~(.*?)~~/s', '<del class="igr-markdown-del">$1</del>', $text);
+    
+    // تبدیل ***bold italic*** یا ___bold italic___
+    $text = preg_replace('/\*\*\*(.*?)\*\*\*/s', '<strong class="igr-markdown-strong"><em class="igr-markdown-em">$1</em></strong>', $text);
+    $text = preg_replace('/___(.*?)___/s', '<strong class="igr-markdown-strong"><em class="igr-markdown-em">$1</em></strong>', $text);
+    
+    return $text;
+}
+
+
+/**
+ * تبدیل کد (inline و block)
+ */
+private function convert_code($text) {
+    // تبدیل کد inline با backticks
+    $text = preg_replace_callback(
+        '/`([^`]+)`/',
+        function($matches) {
+            return '<code class="igr-markdown-code-inline">' . esc_html($matches[1]) . '</code>';
+        },
+        $text
+    );
+    
+    // تبدیل کد block با سه backticks
+    $text = preg_replace_callback(
+        '/```(\w*)\n(.*?)```/s',
+        function($matches) {
+            $language = !empty($matches[1]) ? ' language-' . esc_attr($matches[1]) : '';
+            $code_content = esc_html($matches[2]);
+            return '<pre class="igr-markdown-pre"><code class="igr-markdown-code' . $language . '">' . $code_content . '</code></pre>';
+        },
+        $text
+    );
+    
+    // تبدیل کد block با indent (4 فاصله)
+    $lines = explode("\n", $text);
+    $in_code_block = false;
+    $code_content = [];
+    $output = [];
+    
+    foreach ($lines as $line) {
+        if (preg_match('/^( {4}|\t)/', $line)) {
+            if (!$in_code_block) {
+                $in_code_block = true;
+                $output[] = '<pre class="igr-markdown-pre"><code class="igr-markdown-code">';
+            }
+            $code_content[] = substr($line, 4);
+        } else {
+            if ($in_code_block) {
+                $output[] = implode("\n", $code_content) . '</code></pre>';
+                $in_code_block = false;
+                $code_content = [];
+            }
+            $output[] = $line;
+        }
+    }
+    
+    if ($in_code_block) {
+        $output[] = implode("\n", $code_content) . '</code></pre>';
+    }
+    
+    return implode("\n", $output);
+}
+
+/**
+ * تبدیل نقل‌قول‌ها
+ */
+private function convert_blockquotes($text) {
+    $lines = explode("\n", $text);
+    $output = [];
+    $in_blockquote = false;
+    $blockquote_content = [];
+    
+    foreach ($lines as $line) {
+        if (preg_match('/^>\s?(.*)/', $line, $matches)) {
+            if (!$in_blockquote) {
+                $in_blockquote = true;
+                $blockquote_content = [];
+            }
+            $blockquote_content[] = $matches[1];
+        } else {
+            if ($in_blockquote) {
+                $content = $this->process_inline_markdown(implode("\n", $blockquote_content));
+                $output[] = '<blockquote class="igr-markdown-blockquote">' . $content . '</blockquote>';
+                $in_blockquote = false;
+            }
+            $output[] = $line;
+        }
+    }
+    
+    if ($in_blockquote) {
+        $content = $this->process_inline_markdown(implode("\n", $blockquote_content));
+        $output[] = '<blockquote class="igr-markdown-blockquote">' . $content . '</blockquote>';
+    }
+    
+    return implode("\n", $output);
+}
+
+
+/**
+ * تبدیل پاراگراف‌ها با پردازش inline
+ */
+private function convert_paragraphs($text) {
+    // تقسیم متن به بلوک‌ها (با خطوط خالی)
+    $blocks = preg_split('/\n\s*\n/', $text);
+    $output = [];
+    
+    foreach ($blocks as $block) {
+        $block = trim($block);
+        if (empty($block)) {
+            continue;
+        }
+        
+        // اگر بلوک قبلاً تگ HTML دارد (مثل h1, ul, ol, li, pre, code, blockquote, hr)، آن را تغییر نده
+        if (preg_match('/^<(h[1-6]|ul|ol|li|pre|code|blockquote|hr|p)/i', $block)) {
+            $output[] = $block;
+        } else {
+            $output[] = '<p class="igr-markdown-p">' . $this->process_inline_markdown($block) . '</p>';
+        }
+    }
+    
+    return implode("\n\n", $output);
+}
+
+/**
+ * پردازش Markdown اینلاین (برای داخل پاراگراف‌ها و لیست‌ها)
+ */
+/**
+ * پردازش Markdown اینلاین (برای داخل پاراگراف‌ها و لیست‌ها)
+ */
+private function process_inline_markdown($text) {
+    // ابتدا کدهای inline را پردازش کنیم (قبل از لینک‌ها)
+    $text = preg_replace_callback(
+        '/`([^`]+)`/',
+        function($matches) {
+            return '<code class="igr-markdown-code-inline">' . esc_html($matches[1]) . '</code>';
+        },
+        $text
+    );
+    
+    // تبدیل bold و italic و strikethrough (قبل از لینک‌ها)
+    
+    // تبدیل **bold** به <strong>
+    $text = preg_replace('/\*\*(.*?)\*\*/s', '<strong class="igr-markdown-strong">$1</strong>', $text);
+    
+    // تبدیل __bold__ به <strong>
+    $text = preg_replace('/__(.*?)__/s', '<strong class="igr-markdown-strong">$1</strong>', $text);
+    
+    // تبدیل *italic* به <em> (با دقت بیشتر)
+    $text = preg_replace('/(?<!\*)\*(?!\s)([^*]+?)(?<!\s)\*(?!\*)/s', '<em class="igr-markdown-em">$1</em>', $text);
+    
+    // تبدیل _italic_ به <em> (با دقت بیشتر)
+    $text = preg_replace('/(?<!_)_(?!\s)([^_]+?)(?<!\s)_(?!_)/s', '<em class="igr-markdown-em">$1</em>', $text);
+    
+    // تبدیل ~~strikethrough~~ به <del>
+    $text = preg_replace('/~~(.*?)~~/s', '<del class="igr-markdown-del">$1</del>', $text);
+    
+    // تبدیل ***bold italic*** یا ___bold italic___
+    $text = preg_replace('/\*\*\*(.*?)\*\*\*/s', '<strong class="igr-markdown-strong"><em class="igr-markdown-em">$1</em></strong>', $text);
+    $text = preg_replace('/___(.*?)___/s', '<strong class="igr-markdown-strong"><em class="igr-markdown-em">$1</em></strong>', $text);
+    
+    // تبدیل لینک‌ها - این آخرین مرحله باشد
+    $text = $this->convert_links($text);
+    
+    return $text;
+}
+
+/**
+ * تبدیل لینک‌های Markdown به HTML (تابع جداگانه برای جلوگیری از پردازش دوگانه)
+ */
+private function convert_links($text) {
+    return preg_replace_callback(
+        '/\[([^\]]+)\]\(([^)]+)\)/',
+        function($matches) {
+            $url = esc_url(trim($matches[2]));
+            $link_text = trim($matches[1]);
+            
+            // اگر لینک قبلاً پردازش شده باشد (حاوی <a> باشد)، آن را تغییر نده
+            if (strpos($matches[0], '<a ') !== false) {
+                return $matches[0];
+            }
+            
+            return '<a href="' . $url . '" target="_blank" rel="noopener noreferrer" class="igr-markdown-link">' . esc_html($link_text) . '</a>';
+        },
+        $text
+    );
+}
+
+/**
+ * تبدیل خطوط افقی
+ */
+private function convert_horizontal_rules($text) {
+    $patterns = [
+        '/^[\-\*_]{3,}\s*$/m' => '<hr class="igr-markdown-hr">',
+        '/^[\-\*_]\s*[\-\*_]\s*[\-\*_]\s*$/m' => '<hr class="igr-markdown-hr">',
+    ];
+    
+    foreach ($patterns as $pattern => $replacement) {
+        $text = preg_replace($pattern, $replacement, $text);
+    }
+    
+    return $text;
+}
+
+/**
+ * تبدیل لیست‌های Markdown
+ */
+private function convert_lists($text) {
+    $lines = explode("\n", $text);
+    $output = [];
+    $in_list = false;
+    $list_type = ''; // 'ul' یا 'ol'
+    $list_level = 0;
+    $list_stack = [];
+    
+    foreach ($lines as $line) {
+        // تشخیص لیست نامرتب (با *, -, +)
+        if (preg_match('/^(\s*)[\*\-\+] (.*)/', $line, $matches)) {
+            $level = strlen($matches[1]) / 2; // هر دو فاصله یک سطح
+            $content = $matches[2];
+            
+            if (!$in_list) {
+                $output[] = '<ul class="igr-markdown-ul">';
+                $in_list = true;
+                $list_type = 'ul';
+                $list_level = $level;
+                $list_stack = [['type' => 'ul', 'level' => $level]];
+            }
+            
+            // بررسی تغییر سطح
+            if ($level > $list_level) {
+                $output[] = '<ul class="igr-markdown-ul">';
+                $list_stack[] = ['type' => 'ul', 'level' => $level];
+            } elseif ($level < $list_level) {
+                while (!empty($list_stack) && $list_stack[count($list_stack)-1]['level'] > $level) {
+                    $output[] = '</ul>';
+                    array_pop($list_stack);
+                }
+            }
+            
+            $list_level = $level;
+            $output[] = '<li class="igr-markdown-li">' . $this->process_inline_markdown($content) . '</li>';
+            
+        // تشخیص لیست مرتب (با اعداد)
+        } elseif (preg_match('/^(\s*)\d+\. (.*)/', $line, $matches)) {
+            $level = strlen($matches[1]) / 2;
+            $content = $matches[2];
+            
+            if (!$in_list || $list_type !== 'ol') {
+                if ($in_list) {
+                    $output[] = '</' . $list_type . '>';
+                }
+                $output[] = '<ol class="igr-markdown-ol">';
+                $in_list = true;
+                $list_type = 'ol';
+                $list_level = $level;
+                $list_stack = [['type' => 'ol', 'level' => $level]];
+            }
+            
+            // بررسی تغییر سطح
+            if ($level > $list_level) {
+                $output[] = '<ol class="igr-markdown-ol">';
+                $list_stack[] = ['type' => 'ol', 'level' => $level];
+            } elseif ($level < $list_level) {
+                while (!empty($list_stack) && $list_stack[count($list_stack)-1]['level'] > $level) {
+                    $output[] = '</' . $list_stack[count($list_stack)-1]['type'] . '>';
+                    array_pop($list_stack);
+                }
+            }
+            
+            $list_level = $level;
+            $output[] = '<li class="igr-markdown-li">' . $this->process_inline_markdown($content) . '</li>';
+            
+        } else {
+            // پایان لیست
+            if ($in_list) {
+                // بستن تمام لیست‌های باز
+                while (!empty($list_stack)) {
+                    $output[] = '</' . $list_stack[count($list_stack)-1]['type'] . '>';
+                    array_pop($list_stack);
+                }
+                $in_list = false;
+                $list_type = '';
+                $list_level = 0;
+            }
+            
+            // افزودن خط معمولی
+            $output[] = $line;
+        }
+    }
+    
+    // بستن لیست‌های باقی‌مانده
+    if ($in_list) {
+        while (!empty($list_stack)) {
+            $output[] = '</' . $list_stack[count($list_stack)-1]['type'] . '>';
+            array_pop($list_stack);
+        }
+    }
+    
+    return implode("\n", $output);
+}
+
+
+/**
+ * تبدیل تیترهای Markdown با پردازش inline
+ */
+private function convert_headers($text) {
+    // تبدیل # تیتر
+    $text = preg_replace_callback('/^# (.*)$/m', function($matches) {
+        return '<h1 class="igr-markdown-h1">' . $this->process_inline_markdown($matches[1]) . '</h1>';
+    }, $text);
+    
+    // تبدیل ## تیتر (سطح 2)
+    $text = preg_replace_callback('/^## (.*)$/m', function($matches) {
+        return '<h2 class="igr-markdown-h2">' . $this->process_inline_markdown($matches[1]) . '</h2>';
+    }, $text);
+    
+    // تبدیل ### تیتر (سطح 3)
+    $text = preg_replace_callback('/^### (.*)$/m', function($matches) {
+        return '<h3 class="igr-markdown-h3">' . $this->process_inline_markdown($matches[1]) . '</h3>';
+    }, $text);
+    
+    // تبدیل #### تیتر (سطح 4)
+    $text = preg_replace_callback('/^#### (.*)$/m', function($matches) {
+        return '<h4 class="igr-markdown-h4">' . $this->process_inline_markdown($matches[1]) . '</h4>';
+    }, $text);
+    
+    return $text;
+}
+
+  
     /**
      * شورت‌کد نمایش نسخه
      */
